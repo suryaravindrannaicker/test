@@ -1,0 +1,30 @@
+language: go
+
+service:
+  - docker
+
+before_install: 
+- wget -qO- https://toolbelt.heroku.com/install.sh | sh
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin  
+- echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
+
+
+script:
+ - go test -v ./...
+ 
+ - docker images
+ - docker build -t travisheroku .
+ - docker run travisheroku
+ - docker tag travisheroku:latest suryanaicker/travisheroku:doc 
+ - docker tag suryanaicker/travisheroku:doc registry.heroku.com/$HEROKU_APP_NAME/web
+ 
+ deploy: 
+  provider: script 
+  script: 
+    # push to dockerhub & heroku 
+    docker push suryanaicker/travisheroku:doc
+    docker push registry.heroku.com/$HEROKU_APP_NAME/web; 
+    heroku container:release web --app $HEROKU_APP_NAME; 
+  on: 
+    branch: master
+    
