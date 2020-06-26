@@ -3,7 +3,7 @@ import "fmt"
 
 
 func main(){
-fmt.Println("hello surya naicker")
+fmt.Println("hello surya naicker. this")
 fmt.Println(Sqrt(64))
 
 }
@@ -17,3 +17,4 @@ func Sqrt(x float64) float64 {
 	}
 	return z
 }
+
